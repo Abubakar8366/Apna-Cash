@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>کیش بک کھاتہ</title>
+  <style>
+    body {
+      font-family: 'Jameel Noori Nastaleeq', sans-serif;
+      background-color: #f4f4f4;
+      padding: 0;
+      width: 100%;
+      margin: 0;
+  
+      direction: rtl;
+    }
+    h1, h2, h3 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    select, input, button {
+      padding: 10px;
+      margin: 5px 0;
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+      font-weight: bold;
+    }
+    th {
+      background-color: #ddd;
+    }
+    .form-section {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    .btn {
+      background-color: #27ae60;
+      color: white;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #1e8449;
+    }
+    .btn-danger {
+      background-color: #c0392b;
+    }
+    .btn-danger:hover {
+      background-color: #922b21;
+    }
+    .red {
+      color: red;
+    }
+    .hidden {
+      display: none;
+    }
+    #report {
+     margin: 20px auto;
+     background: #e3f2fd;
+     padding: 20px;
+     border-radius: 15px;
+     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+     width: 95%;
+     max-width: 600px;
+     text-align: center;
+   }
+    #report p {
+     font-size: 20px;
+     font-weight: bold;
+     margin: 12px 0;
+   }
+    #report span {
+    font-size: 22px;
+   }
+    .red-balance {
+    color: red;
+    font-weight: bold;
+   }
+   #report {
+  margin: 20px auto;
+  background: #e3f2fd;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 95%;
+  max-width: 600px;
+  text-align: center;
+  }
+  #reportPage {
+  margin: 0 auto;
+  width: 95%;
+  max-width: 600px;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  }
+  </style>
+</head>
+<body>
+
+<h1>📘 Apna Cash Khata</h1>
+
+<!-- Main Section -->
+<div id="mainPage">
+  <div class="form-section">
+    <h2>🔹 نیا کھاتہ بنائیں</h2>
+    <input type="text" id="newAccountName" placeholder="Add New Account">
+    <button onclick="addAccount()" class="btn">➕ Add Account</button>
+
+    <h2>📂 موجودہ کھاتے</h2>
+    <select id="accountSelect" onchange="switchAccount()">
+      <option value="">Select Account</option>
+    </select>
+    <button onclick="deleteAccount()" class="btn btn-danger">🗑️ Delete Account</button>
+    <button onclick="showReportPage()" class="btn" style="margin-top: 20px;">📊 Check Report</button>
+  </div>
+
+  <div class="form-section">
+    <h2>📥 اندراج کریں</h2>
+    <form id="entryForm">
+      <input type="date" id="date" placeholder="Date" required>
+      <input type="text" id="desc" placeholder="Any Details" required>
+      <input type="number" id="cashIn" placeholder="ٰIncome Amount">
+      <input type="number" id="cashOut" placeholder="Spend Amount">
+      <button type="submit" class="btn">✔️ Save Data</button>
+    </form>
+  </div>
+  
+  
+  <table>
+    <thead>
+      <tr>
+        <th>تاریخ</th>
+        <th>تفصیل</th>
+        <th>آمد ن</th>
+        <th>خرچہ</th>
+        <th>بیلنس</th>
+        <th>ایڈٹ/ڈیلیٹ</th>
+      </tr>
+    </thead>
+    <tbody id="cashTable"></tbody>
+    
+  </table>
+  
+
+  
+</div>
+
+<!-- Report Page -->
+<div id="reportPage" class="hidden">
+  <button onclick="backToMain()" class="btn">🔙 Back Home</button>
+  <button onclick="printReport()" class="btn" style="margin-top: 10px;">🖨️ Print / Save PDF</button>
+  <h2>📄 رپورٹ برائے کھاتہ: <span id="reportAccountName"></span></h2>
+  <input type="date" id="startDate" placeholder="Date">
+  <input type="date" id="endDate" placeholder="Date">
+  <button onclick="generateReport()" class="btn">🔍 Search Data</button>
+
+  <div>
+    <p>ٹوٹل آمدنی: <span id="filterIn">0</span></p>
+    <p>ٹوٹل خرچہ: <span id="filterOut">0</span></p>
+    <p>ٹوٹل بیلنس: <span id="filterBalance">0</span></p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>تاریخ</th>
+        <th>تفصیل</th>
+        <th>آمدنی</th>
+        <th>خرچہ</th>
+        <th>بیلنس</th>
+      </tr>
+    </thead>
+    <tbody id="filteredTable"></tbody>
+  </table>
+</div>
+
+<script>
+let accounts = JSON.parse(localStorage.getItem('accounts')) || {};
+let currentAccount = "";
+let editIndex = null;
+
+function saveToLocalStorage() {
+  localStorage.setItem('accounts', JSON.stringify(accounts));
+}
+
+function addAccount() {
+  const name = document.getElementById('newAccountName').value.trim();
+  if (name && !accounts[name]) {
+    accounts[name] = { entries: [], totalIn: 0, totalOut: 0, balance: 0 };
+    saveToLocalStorage();
+    populateAccountsDropdown();
+    document.getElementById('newAccountName').value = "";
+    alert("نیا کھاتہ شامل ہوگیا ہے!");
+  }
+}
+
+function deleteAccount() {
+  if (!currentAccount) return alert("پہلے کھاتہ منتخب کریں۔");
+  if (confirm("کیا آپ واقعی یہ کھاتہ حذف کرنا چاہتے ہیں؟")) {
+    delete accounts[currentAccount];
+    saveToLocalStorage();
+    currentAccount = "";
+    populateAccountsDropdown();
+    renderTable();
+  }
+}
+
+function populateAccountsDropdown() {
+  const select = document.getElementById('accountSelect');
+  select.innerHTML = `<option value="">Select Account First</option>`;
+  for (let name in accounts) {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    select.appendChild(option);
+  }
+  if (accounts[currentAccount]) {
+    select.value = currentAccount;
+  }
+}
+
+function switchAccount() {
+  currentAccount = document.getElementById('accountSelect').value;
+  renderTable();
+}
+
+function recalculateBalances(account) {
+  let balance = 0;
+  account.entries.forEach(e => {
+    balance += (e.cashIn - e.cashOut);
+    e.balance = balance;
+  });
+  account.balance = balance;
+}
+
+function renderTable() {
+  const table = document.getElementById('cashTable');
+  const account = accounts[currentAccount];
+  table.innerHTML = "";
+  if (!account) return;
+  account.entries.forEach((entry, index) => {
+    const formattedBalance = entry.balance < 0 ? `(<span class='red'>${Math.abs(entry.balance)}</span>)` : entry.balance;
+    table.innerHTML += `
+      <tr>
+        <td>${entry.date}</td>
+        <td>${entry.desc}</td>
+        <td>${entry.cashIn}</td>
+        <td>${entry.cashOut}</td>
+        <td>${formattedBalance}</td>
+        <td>
+          <button onclick="editEntry(${index})">✏️</button>
+          <button onclick="deleteEntry(${index})">🗑️</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+document.getElementById('entryForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (!currentAccount) return alert("براہ کرم پہلے ایک کھاتہ منتخب کریں۔");
+
+  const date = document.getElementById('date').value;
+  const desc = document.getElementById('desc').value;
+  const cashIn = parseFloat(document.getElementById('cashIn').value) || 0;
+  const cashOut = parseFloat(document.getElementById('cashOut').value) || 0;
+
+  const account = accounts[currentAccount];
+
+  if (editIndex !== null) {
+    const old = account.entries[editIndex];
+    account.totalIn = account.totalIn - old.cashIn + cashIn;
+    account.totalOut = account.totalOut - old.cashOut + cashOut;
+    account.entries[editIndex] = { date, desc, cashIn, cashOut, balance: 0 };
+    editIndex = null;
+  } else {
+    account.entries.push({ date, desc, cashIn, cashOut, balance: 0 });
+    account.totalIn += cashIn;
+    account.totalOut += cashOut;
+  }
+  recalculateBalances(account);
+  saveToLocalStorage();
+  renderTable();
+  this.reset();
+});
+
+function editEntry(index) {
+  const entry = accounts[currentAccount].entries[index];
+  document.getElementById('date').value = entry.date;
+  document.getElementById('desc').value = entry.desc;
+  document.getElementById('cashIn').value = entry.cashIn;
+  document.getElementById('cashOut').value = entry.cashOut;
+  editIndex = index;
+}
+
+function deleteEntry(index) {
+  if (confirm("کیا آپ واقعی یہ اندراج حذف کرنا چاہتے ہیں؟")) {
+    const account = accounts[currentAccount];
+    account.totalIn -= account.entries[index].cashIn;
+    account.totalOut -= account.entries[index].cashOut;
+    account.entries.splice(index, 1);
+    recalculateBalances(account);
+    saveToLocalStorage();
+    renderTable();
+  }
+}
+
+function showReportPage() {
+  if (!currentAccount) return alert("پہلے کھاتہ منتخب کریں۔");
+  document.getElementById('mainPage').classList.add('hidden');
+  document.getElementById('reportPage').classList.remove('hidden');
+  document.getElementById('reportAccountName').textContent = currentAccount;
+  generateReport();
+}
+
+function backToMain() {
+  document.getElementById('mainPage').classList.remove('hidden');
+  document.getElementById('reportPage').classList.add('hidden');
+}
+
+function generateReport() {
+  const start = document.getElementById('startDate').value;
+  const end = document.getElementById('endDate').value;
+  const entries = accounts[currentAccount].entries;
+
+  let filterIn = 0, filterOut = 0, balance = 0;
+  let filteredRows = "";
+
+  entries.forEach(e => {
+    if ((!start || e.date >= start) && (!end || e.date <= end)) {
+      filterIn += e.cashIn;
+      filterOut += e.cashOut;
+      balance += (e.cashIn - e.cashOut);
+      const displayBalance = balance < 0 ? `(<span class='red'>${Math.abs(balance)}</span>)` : balance;
+      filteredRows += `
+        <tr>
+          <td>${e.date}</td>
+          <td>${e.desc}</td>
+          <td>${e.cashIn}</td>
+          <td>${e.cashOut}</td>
+          <td>${displayBalance}</td>
+        </tr>
+      `;
+    }
+  });
+
+  document.getElementById('filterIn').textContent = filterIn;
+  document.getElementById('filterOut').textContent = filterOut;
+  document.getElementById('filterBalance').innerHTML = balance < 0 ? `(<span class='red'>${Math.abs(balance)}</span>)` : balance;
+  document.getElementById('filteredTable').innerHTML = filteredRows;
+}
+
+window.onload = function () {
+  populateAccountsDropdown();
+};
+function printReport() {
+  const originalContent = document.body.innerHTML;
+  const reportContent = document.getElementById('reportPage').innerHTML;
+  document.body.innerHTML = reportContent;
+  window.print();
+  document.body.innerHTML = originalContent;
+  window.location.reload(); // Refresh to restore original view
+}
+</script>
+
+</body>
+</html>
